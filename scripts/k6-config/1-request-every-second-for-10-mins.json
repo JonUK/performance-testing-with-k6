@@ -1,0 +1,12 @@
+{
+  "scenarios": {
+    "constant_request_rate": {
+      "executor": "constant-arrival-rate",
+      "rate": 1,
+      "timeUnit": "1s",
+      "duration": "10m",
+      "preAllocatedVUs": 1,
+      "maxVUs": 100
+    }
+  }
+}

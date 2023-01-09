@@ -1,0 +1,39 @@
+{
+	"id": "63294f60-6421-438a-8f8e-1fe75cfaa858",
+	"values": [
+		{
+			"key": "AzureTenantId",
+			"value": "c711dccd-d2b5-43fc-9469-2565a99eb85c",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "AzureClientId",
+			"value": "e5796bed-6126-43ef-a941-3a95c825bb75",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "AzureSecret",
+			"value": "mt5O47.j6iCHkJ8~3sF6AuSkn.2-..eCMy",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "agencyId",
+			"value": "jkeeping",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"name": "Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2023-01-07T23:28:45.475Z",
+	"_postman_exported_using": "Postman/10.6.7"
+}

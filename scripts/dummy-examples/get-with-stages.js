@@ -33,7 +33,7 @@ export let options = {
 
 export default function() {
   const status = Math.random() < 0.9 ? "200" : "500";
-  let res = http.get(`http://httpbin.org/status/${status}`);
+  let res = http.get(`https://nice.com`);
   let success = check(res, {
     "status is 200": r => r.status === 200
   });

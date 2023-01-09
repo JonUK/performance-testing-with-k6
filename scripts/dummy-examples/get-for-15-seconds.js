@@ -15,7 +15,7 @@ export const options = {
 export default function() {
   const path = Math.random() < 0.9 ? "200" : "500";
 
-  let res = http.get(`https://httpbin.test.loadimpact.com/status/${path}`);
+  let res = http.get(`https://www.nice.com/`);
   let success = check(res, {
     "status is 200": r => r.status === 200
   });

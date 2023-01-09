@@ -1,0 +1,17 @@
+{
+  "name": "performance-testing-with-k6",
+  "version": "1.0.0",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JonUK/performance-testing-with-k6.git"
+  },
+  "devDependencies": {
+    "@apideck/postman-to-k6": "^1.8.6",
+    "axios": "^1.2.2",
+    "chalk": "^4.1.2",
+    "commander": "^9.5.0",
+    "fs": "0.0.1-security",
+    "qs": "^6.11.0"
+  }
+}

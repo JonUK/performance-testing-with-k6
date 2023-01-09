@@ -1,0 +1,209 @@
+{
+	"info": {
+		"_postman_id": "aee17ae9-e628-43cf-bf1c-6c07a90c02ab",
+		"name": "Adjudication API - Load Test - Pre Script",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24989815"
+	},
+	"item": [
+		{
+			"name": "adjudication",
+			"item": [
+				{
+					"name": "asynchronously check privilages for the request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"contains a feedback\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.feedback.length).to.be.above(0);",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Investigate-AgencyId",
+								"value": "{{agencyId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"requestGuid\": \"2B02D9EC-361C-4E70-BACD-646FC51F4E3B\",\r\n  \"inquiries\": [\r\n    {\r\n      \"resourceType\": 16777216,\r\n      \"resourceGuid\": \"00000000-0000-0000-0000-000000000000\"\r\n    }\r\n  ],\r\n  \"context\": {\r\n    \"userId\": \"{{userId}}\",\r\n    \"agencyId\": \"pupson\"\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "{{AdjudicationServiceUrl}}api/adjudication/privileges",
+							"host": [
+								"{{AdjudicationServiceUrl}}api"
+							],
+							"path": [
+								"adjudication",
+								"privileges"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get the hydrated ruleset for querying",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"contains at least 1 hydrated rule\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.be.above(0);",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "X-Investigate-AgencyId",
+								"value": "{{agencyId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{AdjudicationServiceUrl}}api/adjudication/hydrated?userId={{userId}}&privilegeName={{privilegeName}}",
+							"host": [
+								"{{AdjudicationServiceUrl}}api"
+							],
+							"path": [
+								"adjudication",
+								"hydrated"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "{{userId}}"
+								},
+								{
+									"key": "privilegeName",
+									"value": "{{privilegeName}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder for adjudication"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.sendRequest({",
+					"    url: \"https://login.microsoftonline.com/\"+pm.variables.get(\"AzureTenantId\")+\"/oauth2/token\",",
+					"    method: 'POST',",
+					"      header: {",
+					"        'Accept': 'application/json',",
+					"        'Content-Type': 'application/x-www-form-urlencoded'",
+					"        ",
+					"      },",
+					"    body: {",
+					"          mode: 'urlencoded',",
+					"          urlencoded: [",
+					"            {key: \"grant_type\", value: \"client_credentials\", disabled: false},",
+					"            {key: \"resource\", value: pm.variables.get(\"AdjResourceUri\"), disabled: false},",
+					"            {key: \"client_id\", value: pm.variables.get(\"AzureClientId\"), disabled: false},",
+					"            {key: \"client_secret\", value: pm.variables.get(\"AzureSecret\"), disabled: false}",
+					"        ]",
+					"      }",
+					"    },",
+					"    function (err, response) {",
+					"        var json = response.json()",
+					"        pm.variables.set(\"token\", json.access_token)",
+					"});"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "AdjudicationServiceUrl",
+			"value": "https://localhost:44335/"
+		},
+		{
+			"key": "version",
+			"value": "1.0.12"
+		},
+		{
+			"key": "AdjResourceUri",
+			"value": "https://darrylpullennice.onmicrosoft.com/d6ae8070-a964-4013-a0bb-52a114c96113"
+		},
+		{
+			"key": "userId",
+			"value": "6a6dbc22-42c0-4aee-9b06-ab52794643da"
+		},
+		{
+			"key": "privilegeName",
+			"value": "SearchView"
+		},
+		{
+			"key": "documentId",
+			"value": "Demo Investigator Portal Policy"
+		}
+	]
+}
