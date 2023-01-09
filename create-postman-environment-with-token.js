@@ -5,6 +5,7 @@
 
 const axios = require('axios');
 const chalk = require('chalk');
+const getDirName = require('path').dirname;
 const fs = require('fs/promises');
 const qs = require('qs');
 const { Command } = require('commander');
@@ -14,11 +15,11 @@ const program = new Command();
 /**
  * The output location for the environment file with the real token variable.
  * This file must be generated in the "scripts\generated" folder so the file is available to K6 running
- * in a container. Also, this file with real token in it then isn't committed to git (the folder 
- * "scripts\generated" is excluded).
+ * in a container. Also, this file has a real token in it therefore MUST NOT bt committed to git (the
+ * folder "scripts\generated" is excluded).
  * @type {string}
  */
-const outputFilePath = 'scripts\\generated\\environment-with-token.json';
+const OUTPUT_FILE_PATH = 'scripts\\generated\\environment-with-token.json';
 
 program
   .name('create-postman-environment-with-token')
@@ -39,10 +40,10 @@ program
       const authSettings = await getAuthSettings(globalsFilename, resourceUriVariableKey, environmentData);
       const token = await generateBearerToken(authSettings);
 
-      await savePostmanEnvironmentJsonFileWithToken(environmentData, outputFilePath, token);
+      await savePostmanEnvironmentJsonFileWithToken(environmentData, OUTPUT_FILE_PATH, token);
       
-      console.info(chalk.green(`Postman collection with token created: ${outputFilePath}`));
-      console.info(chalk.gray('output-file-path:'), outputFilePath);
+      console.info(chalk.green('Postman collection with token created successfully'));
+      console.info(chalk.gray('output-file-path:'), OUTPUT_FILE_PATH);
     } catch (e) {
       console.error(chalk.red(`Error occurred generating the Postman environment JSON file with token:`), e);
     }
@@ -50,6 +51,11 @@ program
 
 program.parse();
 
+/**
+ * Reads a Postman environment or globals variables file and returns an object for the JSON
+ * @param {string} filename
+ * @returns {Promise<{values}|*|{}>}
+ */
 async function readPostmanVariablesJsonFile(filename) {
 
   let jsonString = '';
@@ -75,8 +81,14 @@ async function readPostmanVariablesJsonFile(filename) {
   return fileData;
 }
 
-
-async function savePostmanEnvironmentJsonFileWithToken(environmentData, filename, token) {
+/**
+ * Saves an environment data object with a token variable to a Postman environment JSON file 
+ * @param {object} environmentData
+ * @param {string} filePath
+ * @param {string} token
+ * @returns {Promise<void>}
+ */
+async function savePostmanEnvironmentJsonFileWithToken(environmentData, filePath, token) {
 
   const tokenItem = environmentData.values.find(x => x.key === 'token');
 
@@ -92,16 +104,29 @@ async function savePostmanEnvironmentJsonFileWithToken(environmentData, filename
     });
   }
 
+  // If the "scripts/generated" output folder doesn't exist then it needs to be created
+  const outputFolderPath = getDirName(filePath);  
+  try {
+    // Use fs Promises / async approach for checking if the folder exists
+    await fs.stat(outputFolderPath)
+  } catch (e) {
+    if (e.code === "ENOENT") {      
+      await fs.mkdir(outputFolderPath);      
+    } else {
+      throw e;
+    }
+  }
+
   try {
     const jsonString = JSON.stringify(environmentData, null, 2); // Indent size = 2
-    await fs.writeFile(filename, jsonString);
+    await fs.writeFile(filePath, jsonString);
   } catch (e) {
     throw new CustomException('Error writing file to disk', e);
   }
 }
 
 /**
- * Call Azure AD to generate a token
+ * Call Azure AD to generate a client credentials token
  * @param {AuthSettings} authSettings
  */
 function generateBearerToken(authSettings) {
@@ -135,7 +160,7 @@ function generateBearerToken(authSettings) {
 }
 
 /**
- * 
+ * Populates an AuthSettings object from variables in the environment and globals objects
  * @param {string} globalsFilename
  * @param {string} resourceUriVariableKey
  * @param {object} environmentData
@@ -152,7 +177,7 @@ async function getAuthSettings(globalsFilename, resourceUriVariableKey, environm
   const globalsData = await readPostmanVariablesJsonFile(globalsFilename);
 
   /**
-   * Inner function to retrieve required item values from the environment "values" array
+   * Inner function to retrieve required item values from the globals "values" array
    */
   function getGlobalsRequiredValue(key) {
     const item = globalsData.values.find(x => x.key === key);
@@ -182,7 +207,7 @@ class CustomException {
 }
 
 /**
- * Class to hold all the setting required to generate a client credentials token for an Azure resource 
+ * Class to hold all the settings required to generate a client credentials token for an Azure resource 
  */
 class AuthSettings {
   constructor(resourceUri, tenantId, clientId, clientSecret) {

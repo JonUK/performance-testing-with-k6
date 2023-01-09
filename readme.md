@@ -1,12 +1,17 @@
 # Performance Testing with K6
 
 ## 1. Export Postman collection, environment and global files
-
+Ensure the Postman collection, environment variables and global variables JSON files are exported to the same folder as this `README.md`.
 
 ## 2. Add real token to copy of Postman environment
+**TODO: Review if these steps can / should be run in a container**
+ - First install the required npm development dependencies locally.
 ```
 npm install
 ```
+
+- Now execute the `create-postman-environment-with-token.js` script passing the filename for the Postman collection, the resource URI variable key and optionally the globals file path.
+For help on the options supported, run the script with `--help`.
 
 **Providing Postman collection file and resource URI**
 ```
@@ -32,7 +37,7 @@ Later, when the K6 container is run, the `scripts` folder is mounted so the K6 s
 
 
 ## 4. Start Grafana and InfluxDB container instances
-Grafana provides a graphing dashboard and InfluxDB is a high-speed read and write database ideal real-time analytics. 
+Grafana provides a graphing dashboard and InfluxDB is a high-speed read and write database ideal for real-time analytics. 
 
  - Start instances of both containers in detached mode
 ```
@@ -65,6 +70,9 @@ docker-compose run k6 run --config /scripts/k6-config/1-request-every-second-for
 ```
 ```
 docker-compose run k6 run --config /scripts/k6-config/50-users-for-10-minutes.json /scripts/generated/adjudication-api-k6-script.js
+```
+```
+docker-compose run k6 run --config /scripts/k6-config/1-request-every-10-seconds-for-1-hour.json /scripts/generated/adjudication-api-k6-script.js
 ```
 
 ## 6. Stop Grafana and InfluxDB container instances
