@@ -51,6 +51,9 @@ docker-compose up --detach influxdb grafana
  - Enter a name for the dashboard and for the "K6" field / InfluxDB data source, select the "K6" entry in the dropdown
  - Click the "Import" button to create the dashboard
 
+**NOTE**: There are pre-build Grafana dashboards that can be viewed in [the online library](https://grafana.com/grafana/dashboards/).
+The [k6 Load Testing Results](https://grafana.com/grafana/dashboards/10660-k6-load-testing-results/) dashboard with ID `10660` what is contained in the file `grafana_dashboard.json`.
+
 ## 5. Run the K6 script
 Run K6 from the container and execute the K6 script in the mounted `scripts` folder.
 
